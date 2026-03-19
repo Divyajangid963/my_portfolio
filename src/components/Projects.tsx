@@ -29,14 +29,14 @@ const projects = [
 
 const Projects = () => {
   return (
-    <section className="relative py-40 px-6 overflow-hidden">
+    <section className="relative py-24 md:py-40 px-6 overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col items-center mb-24">
+        <div className="flex flex-col items-center mb-16 md:mb-24">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-5xl md:text-7xl font-bold text-white mb-6 text-center tracking-tighter"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 text-center tracking-tighter"
           >
             Selected <span className="text-gradient">Work</span>
           </motion.h2>
@@ -48,7 +48,7 @@ const Projects = () => {
           />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-10">
           {projects.map((project, index) => (
             <motion.div
               key={index}
@@ -57,7 +57,7 @@ const Projects = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
               whileHover={{ scale: 1.02 }}
-              className="group relative p-8 rounded-3xl glass-card overflow-hidden"
+              className="group relative p-6 sm:p-8 rounded-3xl glass-card overflow-hidden"
             >
               <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${project.accent} opacity-10 blur-3xl group-hover:opacity-30 transition-opacity`} />
               
@@ -66,37 +66,37 @@ const Projects = () => {
                   Project {index + 1}
                 </span>
                 
-                <h3 className="text-white text-3xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-white text-2xl md:text-3xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">
                   {project.title}
                 </h3>
                 
-                <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-sm">
+                <p className="text-gray-400 text-base md:text-lg mb-8 leading-relaxed max-w-sm">
                   {project.desc}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mb-10">
+                <div className="flex flex-wrap gap-2 mb-8 md:mb-10">
                   {project.tech.map((tech, i) => (
                     <span
                       key={i}
-                      className="text-xs px-4 py-1.5 rounded-full border border-white/5 bg-white/5 text-gray-300 backdrop-blur-md"
+                      className="text-[10px] md:text-xs px-3 py-1.5 md:px-4 md:py-1.5 rounded-full border border-white/5 bg-white/5 text-gray-300 backdrop-blur-md"
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex-1 py-4 rounded-2xl bg-white text-black font-bold tracking-tight hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                    className="flex-1 py-3 md:py-4 rounded-2xl bg-white text-black font-bold tracking-tight hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                   >
                     View Project
                   </motion.button>
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex-1 py-4 rounded-2xl border border-white/10 text-white font-bold tracking-tight hover:bg-white/5 backdrop-blur-md"
+                    className="flex-1 py-3 md:py-4 rounded-2xl border border-white/10 text-white font-bold tracking-tight hover:bg-white/5 backdrop-blur-md"
                   >
                     Source Code
                   </motion.button>

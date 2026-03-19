@@ -28,7 +28,7 @@ const MagneticButton = ({ text, onClick }: { text: string; onClick?: () => void 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      className="px-10 py-4 rounded-full bg-white text-black font-bold text-lg hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-shadow duration-300 relative z-50"
+      className="px-12 py-5 md:px-16 md:py-6 rounded-full bg-white text-black font-black text-sm md:text-lg hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-shadow duration-300 relative z-50 uppercase tracking-widest"
     >
       {text}
     </motion.button>
