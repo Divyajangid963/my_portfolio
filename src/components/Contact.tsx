@@ -1,6 +1,13 @@
+import { Github, Linkedin, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Contact = () => {
+  const socials = [
+    { name: 'GitHub', icon: Github, h: 'https://github.com/Divyajangid963' },
+    { name: 'LinkedIn', icon: Linkedin, h: 'https://linkedin.com/in/divyajangid' },
+    { name: 'X', icon: X, h: 'https://twitter.com/divyajangid' },
+  ];
+
   return (
     <section className="py-24 md:py-40 px-6 relative">
       <div className="max-w-4xl mx-auto glass-card p-8 sm:p-12 md:p-20 rounded-[2rem] md:rounded-[3rem] text-center relative overflow-hidden">
@@ -40,15 +47,25 @@ const Contact = () => {
             </motion.button>
           </div>
 
-          <div className="mt-12 md:mt-20 flex flex-wrap justify-center gap-6 md:gap-10">
-            {['GitHub', 'LinkedIn', 'Twitter'].map((platform) => (
-              <a 
-                key={platform}
-                href="#" 
-                className="text-gray-500 hover:text-cyan-400 font-bold tracking-widest uppercase text-[10px] md:text-xs transition-colors"
+          <div className="mt-12 md:mt-20 flex flex-wrap justify-center gap-8 md:gap-12">
+            {socials.map((platform) => (
+              <motion.a 
+                key={platform.name}
+                href={platform.h}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ y: -5, color: '#22d3ee' }}
+                className="text-gray-500 transition-colors"
+                title={platform.name}
               >
-                {platform}
-              </a>
+                {platform.name === 'X' ? (
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                  </svg>
+                ) : (
+                  <platform.icon size={28} strokeWidth={1.5} />
+                )}
+              </motion.a>
             ))}
           </div>
         </motion.div>

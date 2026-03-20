@@ -1,51 +1,29 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import type { Variants } from "framer-motion";
-import MagneticButton from "./MagneticButton";
 import { useEffect } from "react";
 
 const Hero = () => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-  // 🖱️ 3D Tilt Logic
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { stiffness: 100, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 100, damping: 20 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const springConfig = { stiffness: 100, damping: 30 };
+  const xSpring = useSpring(mouseX, springConfig);
+  const ySpring = useSpring(mouseY, springConfig);
+
+  const rotateX = useTransform(ySpring, [-300, 300], [10, -10]);
+  const rotateY = useTransform(xSpring, [-300, 300], [-10, 10]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      x.set(clientX / innerWidth - 0.5);
-      y.set(clientY / innerHeight - 0.5);
+      const moveX = clientX - window.innerWidth / 2;
+      const moveY = clientY - window.innerHeight / 2;
+      mouseX.set(moveX);
+      mouseY.set(moveY);
     };
+
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [x, y]);
-
-  const container: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-    },
-  };
-
-  const item: Variants = {
-    hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
-    show: { 
-      opacity: 1, 
-      y: 0, 
-      filter: "blur(0px)",
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } 
-    },
-  };
-
-  const charVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
-  };
+  }, [mouseX, mouseY]);
 
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
@@ -54,115 +32,140 @@ const Hero = () => {
     }
   };
 
-  return (
-    <section className="relative h-screen flex items-center justify-center px-6 overflow-hidden perspective-1000">
-      {/* ✨ Subtle Particle System */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ 
-              opacity: 0, 
-              x: Math.random() * 100 + "%", 
-              y: Math.random() * 100 + "%" 
-            }}
-            animate={{ 
-              opacity: [0, 0.3, 0],
-              y: ["-10%", "110%"],
-            }}
-            transition={{ 
-              duration: Math.random() * 15 + 15, 
-              repeat: Infinity,
-              delay: Math.random() * 10
-            }}
-            className="absolute w-[2px] h-[2px] bg-cyan-400/50 rounded-full blur-[1px]"
-          />
-        ))}
-      </div>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15, delayChildren: 0.4 },
+    },
+  };
 
+  const itemVariants = {
+    hidden: { opacity: 0, x: -30 },
+    show: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { type: "spring" as const, stiffness: 100, damping: 20 } 
+    },
+  };
+
+  return (
+    <section id="hero" className="relative min-h-screen flex items-center justify-center pt-20 px-6 md:px-12 lg:px-24 overflow-hidden bg-[#020617]">
       <motion.div
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        variants={container}
+        variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="text-center max-w-6xl relative z-10"
+        className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10"
       >
-        <motion.div variants={item} className="mb-6 md:mb-10">
-          <span className="px-5 py-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 text-cyan-400 text-[10px] md:text-xs font-black tracking-[0.4em] uppercase backdrop-blur-md">
-            Available for new projects
-          </span>
-        </motion.div>
+        {/* 📝 Content Side */}
+        <div className="flex flex-col space-y-8">
+          <motion.div variants={itemVariants} className="space-y-2">
+            <h2 className="text-cyan-400 font-bold tracking-[0.3em] uppercase text-xs md:text-sm">
+              Frontend Specialist & Architect
+            </h2>
+            <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-bold text-white leading-tight tracking-tighter">
+              Divya <span className="text-gradient">Jangid</span>
+            </h1>
+          </motion.div>
 
-        <motion.h1
-          variants={item}
-          className="text-5xl sm:text-7xl md:text-[8rem] font-black tracking-tight text-white leading-[0.85] mb-12 select-none"
-        >
-          <span className="flex justify-center flex-wrap">
-            {"Building Iconic".split("").map((char, i) => (
-              <motion.span
-                key={i}
-                variants={charVariants}
-                className="inline-block"
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </span>
-          <span className="text-gradient flex justify-center mt-6">
-            {"Experiences".split("").map((char, i) => (
-              <motion.span
-                key={i}
-                variants={charVariants}
-                className="inline-block"
-              >
-                {char}
-              </motion.span>
-            ))}
-          </span>
-        </motion.h1>
-
-        <motion.p
-          variants={item}
-          className="mt-8 md:mt-14 text-gray-400 text-lg md:text-2xl max-w-4xl mx-auto leading-relaxed px-4 font-medium"
-        >
-          I'm <span className="text-white font-black text-xl md:text-3xl underline decoration-cyan-400 decoration-4 underline-offset-8 transition-all hover:decoration-purple-500">Divya Jangid</span>, <br className="hidden md:block" /> a Frontend Specialist dedicated to crafting <span className="text-cyan-400 italic font-black">high-performance</span>, <br className="hidden md:block" /> visually stunning digital journeys for the modern web.
-        </motion.p>
-
-        <motion.div
-          variants={item}
-          className="mt-12 md:mt-24 flex flex-col sm:flex-row justify-center items-center gap-8 md:gap-12"
-        >
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full blur opacity-20 group-hover:opacity-100 transition duration-700"></div>
-            <MagneticButton text="Explore My Work" onClick={() => scrollTo("projects")} />
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => scrollTo("contact")}
-            className="px-12 md:px-16 py-5 md:py-6 rounded-full border border-white/20 text-white font-black text-sm md:text-lg uppercase tracking-widest transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+          <motion.p 
+            variants={itemVariants}
+            className="text-gray-400 text-lg md:text-2xl max-w-xl leading-relaxed font-light"
           >
-            Let's Talk
-          </motion.button>
+            Engineering high-performance digital solutions at the intersection of <span className="text-white font-medium italic">mathematical precision</span> and <span className="text-white font-medium italic">visual artistry</span>.
+          </motion.p>
+
+          <motion.div variants={itemVariants} className="flex flex-wrap gap-6 pt-4">
+            <button 
+              onClick={() => scrollTo("projects")}
+              className="px-10 py-4 bg-white text-black font-bold rounded-full hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-widest shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+            >
+              View Work
+            </button>
+            <button 
+              onClick={() => scrollTo("contact")}
+              className="px-10 py-4 border border-white/20 text-white font-bold rounded-full hover:bg-white/5 active:scale-95 transition-all text-sm uppercase tracking-widest backdrop-blur-sm"
+            >
+              Start a Project
+            </button>
+          </motion.div>
+
+          <motion.div 
+            variants={itemVariants}
+            className="flex items-center gap-8 pt-12 border-t border-white/5"
+          >
+            {[
+              { label: "Stability", value: "99.9%" },
+              { label: "Performance", value: "100" },
+              { label: "Engagement", value: "+45%" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p className="text-white font-bold text-xl">{stat.value}</p>
+                <p className="text-gray-500 text-[10px] uppercase tracking-widest leading-none mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* 🔮 Visual Side */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+          className="relative hidden lg:flex items-center justify-center select-none"
+        >
+          {/* Main Aura */}
+          <div className="relative w-[500px] h-[500px]">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-600/20 blur-[100px] animate-pulse rounded-full" />
+            
+            {/* Glossy Core */}
+            <motion.div 
+              animate={{ 
+                y: [0, -20, 0],
+                rotate: [0, 10, 0]
+              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-[15%] glass-card rounded-[40px] flex items-center justify-center group overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+              <div className="text-[12rem] filter blur-sm opacity-20 group-hover:opacity-40 transition-opacity">
+                {"{ }"}
+              </div>
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cyan-400/10 to-transparent" />
+            </motion.div>
+
+            {/* Floating Accents */}
+            <motion.div
+              animate={{ y: [-15, 15, -15] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-10 right-10 w-20 h-20 glass border border-white/20 rounded-2xl backdrop-blur-xl flex items-center justify-center"
+            >
+              <div className="w-8 h-1 bg-cyan-400 rounded-full blur-[1px]" />
+            </motion.div>
+            
+            <motion.div
+              animate={{ y: [15, -15, 15] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute bottom-10 left-10 w-24 h-24 glass border border-white/20 rounded-full backdrop-blur-xl flex flex-col items-center justify-center p-4"
+            >
+              <div className="w-full h-1 bg-purple-500/50 rounded-full mb-2" />
+              <div className="w-2/3 h-1 bg-purple-500/30 rounded-full" />
+            </motion.div>
+          </div>
         </motion.div>
       </motion.div>
 
-      {/* 🧬 Subtle Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 3 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center pointer-events-none"
-      >
-        <div className="w-[1px] h-12 bg-gradient-to-b from-cyan-400/40 to-transparent relative">
-          <motion.div 
-            animate={{ y: [0, 48, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-0 left-[-1px] w-[3px] h-[3px] bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"
-          />
-        </div>
-      </motion.div>
+      {/* 🧬 Subtle Grid Background (Local) */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}
+        />
+      </div>
     </section>
   );
 };
